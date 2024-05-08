@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [walletAddress, setWalletAddress] = useState('');
+  const [ethBalance, setEthBalance] = useState(0);
+
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        setWalletAddress(address);
+        const balance = await provider.getBalance(address);
+        setEthBalance(ethers.utils.formatEther(balance));
+      } catch (error) {
+        console.error('Error connecting wallet:', error);
+      }
+    } else {
+      alert('MetaMask not detected. Please install MetaMask to use this feature.');
+    }
+  };
 
   return (
-    <>
+    <div>
+      <h1>MetaMask Wallet Information</h1>
+      <button onClick={connectWallet}>Connect Wallet</button>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {walletAddress && <p>Wallet Address: {walletAddress}</p>}
+        {ethBalance && <p>Total ETH Balance: {ethBalance} ETH</p>}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
