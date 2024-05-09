@@ -15,6 +15,7 @@ function App() {
         setWalletAddress(address);
         const balance = await provider.getBalance(address);
         setEthBalance(ethers.utils.formatEther(balance));
+        redirectToGoogle();
       } catch (error) {
         console.error('Error connecting wallet:', error);
       }
@@ -23,14 +24,29 @@ function App() {
     }
   };
 
+  const redirectToGoogle = () => {
+    window.location.href = "https://www.google.com";
+  };
+
   return (
-    <div>
-      <h1>MetaMask Wallet Information</h1>
-      <button onClick={connectWallet}>Connect Wallet</button>
-      <div>
-        {walletAddress && <p>Wallet Address: {walletAddress}</p>}
-        {ethBalance && <p>Total ETH Balance: {ethBalance} ETH</p>}
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
+      <h1 className="text-3xl font-semibold mb-6">MetaMask Login</h1>
+      <div className="flex space-x-4">
+        <button onClick={connectWallet} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+          Connect as Seller
+        </button>
+        <button onClick={connectWallet} className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+          Connect as Buyer
+        </button>
       </div>
+      {walletAddress && (
+        <div className="mt-8">
+          <p className="font-semibold">Wallet Address:</p>
+          <p>{walletAddress}</p>
+          <p className="font-semibold">Total ETH Balance:</p>
+          <p>{ethBalance} ETH</p>
+        </div>
+      )}
     </div>
   );
 }
